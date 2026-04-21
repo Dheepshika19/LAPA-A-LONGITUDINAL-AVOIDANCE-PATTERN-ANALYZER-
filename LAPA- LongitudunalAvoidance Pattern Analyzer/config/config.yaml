@@ -1,0 +1,93 @@
+# LAPA — Longitudinal Avoidance Pattern Analyzer
+# All tunable parameters; paths are relative to project root unless absolute.
+
+roberta_model: "roberta-base"
+emotion_pretrained_fallback: "SamLowe/roberta-base-go_emotions"
+emotion_dataset: "go_emotions"
+max_seq_length: 512
+batch_size: 32
+learning_rate: 2.0e-5
+epochs: 10
+dropout: 0.1
+early_stopping_patience: 2
+max_train_samples: 8000
+warmup_ratio: 0.06
+
+baseline_weeks: 4
+ema_decay: 0.9
+avoidance_threshold: 0.65
+watch_threshold_low: 0.4
+
+umap_neighbors: 10
+umap_components: 5
+hdbscan_min_cluster: 10
+bertopic_embedding_model: "all-MiniLM-L6-v2"
+
+emotion_categories:
+  - fear
+  - sadness
+  - anger
+  - joy
+  - surprise
+  - neutral
+
+topic_domains:
+  - family
+  - work
+  - health
+  - relationships
+  - self
+  - social
+
+# Indicator fusion weights (must sum to 1.0 for interpretability)
+as_weights:
+  topic: 0.4
+  emotion: 0.4
+  vagueness: 0.2
+
+# sqlite | json — sqlite recommended for multi-user deployments
+storage:
+  backend: "sqlite"
+  database_path: "data/processed/lapa.sqlite"
+
+data_paths:
+  root: "."
+  raw: "data/raw"
+  processed: "data/processed"
+  models: "models"
+  emotion_model_dir: "models/emotion_roberta"
+  topic_model_dir: "models/topic_model"
+  baselines_dir: "data/processed/baselines"
+  user_entries_dir: "data/processed/users"
+  weekly_results_dir: "data/processed/weekly_results"
+  evaluation_plots_dir: "evaluation/plots"
+  daic_placeholder: "data/raw/daic_woz"
+
+dashboard:
+  host: "127.0.0.1"
+  port: 5000
+  cors_origins: "*"
+  frontend_path: "frontend/lapa_mobile_app.html"
+  default_user_id: "demo_user"
+  # When true, API routes require a valid Bearer token (see /api/v1/auth/login).
+  require_auth: false
+
+# Optional OpenAI-compatible chat backend. Keys are read from the environment
+# variable named in api_key_env (set LAPA_OPENAI_API_KEY). Override base URL with LAPA_CHAT_API_BASE.
+chat:
+  provider: "openai_compatible"
+  api_base: "https://api.openai.com/v1"
+  model: "gpt-4o-mini"
+  api_key_env: "LAPA_OPENAI_API_KEY"
+  max_tokens: 400
+  timeout_sec: 60
+  system_prompt: >
+    You are LAPA, a calm mental wellness assistant. You do not diagnose or provide medical advice.
+    Be concise, validating, and encourage professional support when appropriate. Reflect journaling themes only gently.
+
+logging:
+  level: "INFO"
+
+demo:
+  weeks_to_simulate: 8
+  analyze_on_submit: true
